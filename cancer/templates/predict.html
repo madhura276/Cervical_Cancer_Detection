@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predict</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(to right, #eef1ff, #f4f4f9);
+            color: #333;
+        }
+
+        /* HEADER */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 18px 30px;
+            color: white;
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: bold;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: white;
+            padding: 10px 14px;
+            border-radius: 6px;
+            transition: 0.3s;
+        }
+
+        nav a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* CONTAINERS */
+        .container, .container1 {
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            background: white;
+        }
+
+        /* FORM */
+        input, select {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            transition: 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+
+        /* CARDS */
+        .c1 {
+            background: #fff;
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+
+        .c1:hover {
+            transform: translateY(-5px);
+        }
+
+        .status {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .cancer {
+            color: #e74c3c;
+        }
+
+        .no-cancer {
+            color: #2ecc71;
+        }
+
+        /* RESULT BOX */
+        .result-box {
+            background: linear-gradient(135deg, #f5f7ff, #eef1ff);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* BUTTON */
+        button, input[type="submit"] {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover, input[type="submit"]:hover {
+            background: #5a67d8;
+        }
+        </style>
+</head>
+<body>
+    <header>
+    <div class="logo">Cervical Cancer Detection</div>
+
+    <nav id="menu">
+        <a href="/home">Home</a>
+        <a href="/predict">Predict</a>
+        <a href="/history">History</a>
+        <a href="/activity">Activity</a>
+        <a href="/logout" style="background:#ff4d4d; color:white; padding:10px 15px; border-radius:6px; text-decoration:none;">Logout</a>
+    </nav>
+</header>
+    {% if results %}
+    <div class="container1">
+        <div class="c1" id="logistic-regression">
+            <h2>Logistic Regression</h2>
+            <p class="status">No Cancer</p>
+        </div>
+        <div class="c1" id="decision-tree">
+            <h2>Decision Tree</h2>
+            <p class="status">No Cancer</p>
+        </div>
+        <div class="c1" id="random-forest">
+            <h2>Random Forest</h2>
+            <p class="status">No Cancer</p>
+        </div>
+        <div class="c1" id="svm">
+            <h2>SVM</h2>
+            <p class="status">No Cancer</p>
+        </div>
+        <div class="c1" id="xgboost">
+            <h2>XGBoost</h2>
+            <p class="status">No Cancer</p>
+        </div>
+        <div style="width: 600px; height: 400px;">
+            <canvas id="pieChart"></canvas>
+        </div><div style="width: 600px; height: 400px;">
+        <canvas id="barChart"></canvas></div>
+        
+        <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; width: 50%; margin: 20px auto; display: flex; justify-content: space-between; align-items: center;">
+            <div style="flex: 1;">
+                <h3 style="color: #333; margin-bottom: 10px;">Final Health Assessment for Patient <u>{{name}}</u> is:</h3>
+                <h3 id="resultText" style="margin-top: 0;">{{r1}}</h3>
+            </div>
+            <button id="downloadButton" style="padding: 10px 20px; background-color: #007BFF; color: #fff; border: none; border-radius: 5px; font-size: 16px; cursor: pointer;">
+                Download
+            </button>
+        </div>
+        
+    </div>
+    <script>
+        // Get the result from Python (passed via Jinja2)
+        var r1 = "{{ r1 | escape }}";  // Ensuring the string is properly escaped
+
+        var resultText = document.getElementById("resultText");
+        resultText.textContent = r1;
+
+        // Change color based on r1 value
+        if (r1 === "100% Safe.") {
+            resultText.style.color = "green";
+        } else if (r1 === "80% Safe.") {
+            resultText.style.color = "green";  // Optional color for "80% Safe."
+        } else if (r1 === "Getting hospital best advice is recommended.") {
+            resultText.style.color = "orange";
+        } else if (r1 === "Check the hospital immediately.Better to be cautious.") {
+            resultText.style.color = "red";
+        } else {
+            resultText.style.color = "black"; // Default color if no match
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const downloadButton = document.getElementById('downloadButton');
+        downloadButton.addEventListener('click', async () => {
+            const container = document.querySelector('.container1'); // Selects the element by class
+// Ensure container1 exists
+
+            if (!container) {
+                console.error("Element with ID 'container1' not found.");
+                return;
+            }
+
+            const patientName = "{{name}}"; // Replace with dynamic patient name from Flask
+
+            try {
+                // Capture the container as an image
+                const canvas = await html2canvas(container, { scale: 2 });
+                const imageData = canvas.toDataURL('image/png');
+
+                // Create a PDF
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4'); // Portrait mode, A4 size
+
+                // Fit the image into the PDF
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+                pdf.addImage(imageData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save(`${patientName}_result.pdf`);
+            } catch (error) {
+                console.error("An error occurred while generating the PDF:", error);
+            }
+        });
+    });
+</script>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+
+    <script>
+        // Pass the results from Flask to JavaScript
+        const results = {{ results | tojson }};
+        
+        // Now, use this data in JavaScript
+        document.addEventListener("DOMContentLoaded", function() {
+            Object.keys(results).forEach(model => {
+                const statusElement = document.querySelector(`#${model.toLowerCase().replace(/ /g, '-')}`).querySelector('.status');
+                if (results[model] === 0) {
+                    statusElement.textContent = 'No Cancer';
+                    statusElement.classList.add('no-cancer');
+                    statusElement.classList.remove('cancer');
+                } else {
+                    statusElement.textContent = 'Cancer';
+                    statusElement.classList.add('cancer');
+                    statusElement.classList.remove('no-cancer');
+                }
+            });
+        });
+        const cancerCount = Object.values(results).filter(value => value === 1).length;
+    const noCancerCount = Object.values(results).filter(value => value === 0).length;
+
+    // Prepare the data for the pie chart
+    const pieChartData = {
+        labels: ['Cancer', 'No Cancer'],
+        datasets: [{
+            data: [cancerCount, noCancerCount], // Data for cancer and no cancer
+            backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(75, 192, 192, 0.2)'], // Pie section colors
+            borderColor: ['rgba(255, 99, 132, 1)', 'rgba(75, 192, 192, 1)'], // Border colors for sections
+            borderWidth: 1
+        }]
+    };
+
+    // Create the pie chart using Chart.js
+    new Chart(document.getElementById('pieChart'), {
+        type: 'pie',
+        data: pieChartData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top', // Position of the legend
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            return tooltipItem.label + ': ' + tooltipItem.raw; // Custom tooltip showing the data value
+                        }
+                    }
+                }
+            }
+        }
+    });
+    </script>
+
+    <script>
+        // Prepare the data for the bar chart
+        const barChartData = {
+            labels: Object.keys(results), // Model names as labels
+            datasets: [{
+                label: 'No Cancer Predictions',
+                data: Object.values(results).map(value => value === 0 ? 1 : 0), // 1 for No Cancer, 0 for Cancer
+                backgroundColor: 'rgba(75, 192, 192, 0.2)', // Color for No Cancer predictions (green)
+                borderColor: 'rgba(75, 192, 192, 1)', // Border color for No Cancer
+                borderWidth: 1
+            }]
+        };
+    
+        // Create the bar chart
+        new Chart(document.getElementById('barChart'), {
+            type: 'bar',
+            data: barChartData,
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true, // Start the y-axis at zero
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top', // Position of the legend
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.label + ': ' + tooltipItem.raw; // Custom tooltip showing the data value
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+    
+
+    {% endif %}
+    <form action="/predict" method="POST">
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" placeholder="Enter your name">
+    </div>
+    <div class="container">
+        <h2>Demographics</h2>
+        <div class="form-group">
+            <label for="age">Age</label>
+            <input type="number" id="age" name="age" placeholder="Enter your age">
+        </div>
+        <div class="form-group">
+            <label for="num_partners">Number of Sexual Partners</label>
+            <input type="number" id="num_partners" name="num_partners" placeholder="Enter number of sexual partners">
+        </div>
+        <div class="form-group">
+            <label for="first_intercourse">First Sexual Intercourse (Age)</label>
+            <input type="number" id="first_intercourse" name="first_intercourse" placeholder="Enter age at first intercourse">
+        </div>
+    </div>
+
+    <!-- Behavioral Container -->
+    <div class="container">
+        <h2>Behavioral</h2>
+        <div class="form-group">
+            <label for="smokes">Do you smoke?</label>
+            <select id="smokes" name="smokes">
+                <option value="">Select</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="packs_per_year">Smokes (Packs/Year)</label>
+            <input type="number" id="packs_per_year" name="packs_per_year" placeholder="Enter packs per year">
+        </div>
+        <div class="form-group">
+            <label for="hormonal_contraceptives">Do you use hormonal contraceptives?</label>
+            <select id="hormonal_contraceptives" name="hormonal_contraceptives">
+                <option value="">Select</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="contraceptives_years">Hormonal Contraceptives (Years)</label>
+            <input type="number" id="contraceptives_years" name="contraceptives_years" placeholder="Enter years of usage">
+        </div>
+    </div>
+
+    <!-- Medical History Container -->
+    <div class="container">
+        <h2>Medical History</h2>
+        <div class="form-group">
+            <label for="num_pregnancies">Number of Pregnancies</label>
+            <input type="number" id="num_pregnancies" name="num_pregnancies" placeholder="Enter number of pregnancies">
+        </div>
+        <div class="form-group">
+            <label for="stds">Do you have a history of STDs?</label>
+            <select id="stds" name="stds">
+                <option value="">Select</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="stds_hpv">Do you have a history of HPV?</label>
+            <select id="stds_hpv" name="stds_hpv">
+                <option value="">Select</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="stds_diagnosis">Number of STD Diagnoses</label>
+            <input type="number" id="stds_diagnosis" name="stds_diagnosis" placeholder="Enter number of diagnoses">
+        </div>
+        <div class="form-group">
+            <label for="dx_cin">History of CIN Diagnosis</label>
+            <select id="dx_cin" name="dx_cin">
+                <option value="">Select</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="dx_hpv">History of HPV Diagnosis</label>
+            <select id="dx_hpv" name="dx_hpv">
+                <option value="">Select</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="schiller">Schiller Test Results</label>
+            <input type="text" id="schiller" name="schiller" placeholder="Enter test results">
+        </div>
+    </div>
+    
+    <input type="submit" value="Submit">
+</form>
+    <script>
+        // Toggle the responsive menu
+        document.getElementById('menu-toggle').addEventListener('click', function () {
+            const menu = document.getElementById('menu');
+            menu.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
