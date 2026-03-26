@@ -80,11 +80,11 @@ project/
 ## ⚙️ How to Run the Project
 
 ### 1️⃣ Clone the repository
-```bash
-git clone https://github.com/madhura276/cervical-cancer-detection.git
+git clone https://github.com/your-username/cervical-cancer-detection.git
 cd cervical-cancer-detection
 
 ### 2️⃣ Install dependencies
+
 pip install flask pandas numpy scikit-learn xgboost
 
 ### 3️⃣ Run the application
