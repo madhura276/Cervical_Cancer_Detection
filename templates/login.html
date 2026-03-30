@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        /* Global styles */
+        body {
+            font-family: Arial, sans-serif;
+            background: url('/static/imgs/bg.jpg') no-repeat center center/cover;
+
+ 
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            animation: backgroundMove 15s infinite alternate ease-in-out;
+        }
+
+        @keyframes backgroundMove {
+            0% {
+                background-position: center top;
+            }
+            100% {
+                background-position: center bottom;
+            }
+        }
+
+        /* Container styles */
+        .container {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #6d28d9;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        form input {
+            width: 100%;
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        form input:hover, form input:focus {
+            border-color: #6d28d9;
+            box-shadow: 0 0 8px rgba(109, 40, 217, 0.5);
+        }
+
+        button {
+            background-color: #6d28d9;
+            color: white;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            transition: transform 0.2s ease, background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #4c1d95;
+            transform: scale(1.05);
+        }
+
+        p {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        a {
+            color: #6d28d9;
+            text-decoration: none;
+            font-weight: bold;
+            position: relative;
+        }
+
+        a::after {
+            content: '';
+            display: block;
+            width: 0;
+            height: 2px;
+            background: #6d28d9;
+            transition: width 0.3s;
+        }
+
+        a:hover::after {
+            width: 100%;
+        }
+
+        /* Decorative border animation */
+        .container::before, .container::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            z-index: -1;
+            opacity: 0.5;
+            animation: borderMove 4s infinite linear;
+        }
+
+        .container::before {
+            border: 2px solid #6d28d9;
+            top: -5px;
+            left: -5px;
+        }
+
+        .container::after {
+            border: 2px solid #4c1d95;
+            bottom: -5px;
+            right: -5px;
+        }
+
+        @keyframes borderMove {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.03);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Login</h1>
+        
+        {% if messages %}
+            <ul>
+                {% for category, message in messages %}
+                    <li style="color: {% if category == 'error' %}red{% else %}green{% endif %};">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+     
+        <form method="post" action="/">
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Sign In</button>
+        </form>
+        
+        <p>Don't have an account? <a href="/signup">Sign Up</a></p>
+    </div>
+</body>
+</html>

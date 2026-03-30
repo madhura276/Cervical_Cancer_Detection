@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>History</title>
+
+<style>
+body {
+    margin:0;
+    font-family:Arial;
+    background: linear-gradient(to right, #f4f4f9, #eef1ff);
+}
+
+/* HEADER */
+header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    padding:18px 30px;
+    color:white;
+    box-shadow:0 6px 12px rgba(0,0,0,0.15);
+}
+
+.logo { font-size:2rem; font-weight:bold; }
+
+nav { display:flex; gap:20px; }
+
+nav a {
+    color:white;
+    text-decoration:none;
+    padding:10px 16px;
+    border-radius:6px;
+    transition:0.3s;
+}
+
+nav a:hover {
+    background:rgba(255,255,255,0.2);
+    transform:translateY(-2px);
+}
+
+/* CONTAINER */
+.container {
+    max-width:1400px;
+    margin:30px auto;
+    padding:20px;
+    background:white;
+    border-radius:10px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* TABLE */
+table {
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+    border-radius:10px;
+    overflow:hidden;
+}
+
+thead {
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    color:white;
+}
+
+th, td {
+    padding:12px;
+    text-align:center;
+    border-bottom:1px solid #eee;
+}
+
+tr:hover {
+    background:#f1f3ff;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="logo">Cervical Cancer Detection</div>
+<nav>
+<a href="/home">Home</a>
+<a href="/predict">Predict</a>
+<a href="/history">History</a>
+<a href="/activity">Activity</a>
+<a href="/logout" style="background:#ff4d4d;color:white;padding:10px;border-radius:6px;">Logout</a>
+</nav>
+</header>
+
+<div class="container">
+<h2 style="color:#6c63ff;">Patient Prediction History</h2>
+
+<table>
+<thead>
+<tr>
+<th>Name</th><th>Time</th><th>Age</th><th>Partners</th>
+<th>Intercourse</th><th>Preg</th><th>Smokes</th>
+<th>Packs</th><th>Hormonal</th><th>Years</th>
+<th>STDs</th><th>HPV</th><th>Diag</th>
+<th>CIN</th><th>HPV Dx</th><th>Schiller</th><th>Biopsy</th>
+</tr>
+</thead>
+
+<tbody>
+{% for row in user_data %}
+<tr>
+<td>{{ row.name }}</td>
+<td>{{ row.time }}</td>
+<td>{{ row.Age }}</td>
+<td>{{ row["Number of sexual partners"] }}</td>
+<td>{{ row["First sexual intercourse"] }}</td>
+<td>{{ row["Num of pregnancies"] }}</td>
+<td>{{ row.Smokes }}</td>
+<td>{{ row["Smokes (packs/year)"] }}</td>
+<td>{{ row["Hormonal Contraceptives"] }}</td>
+<td>{{ row["Hormonal Contraceptives (years)"] }}</td>
+<td>{{ row.STDs }}</td>
+<td>{{ row["STDs:HPV"] }}</td>
+<td>{{ row["STDs: Number of diagnosis"] }}</td>
+<td>{{ row["Dx:CIN"] }}</td>
+<td>{{ row["Dx:HPV"] }}</td>
+<td>{{ row.Schiller }}</td>
+<td>{{ row.Biopsy }}</td>
+</tr>
+{% endfor %}
+</tbody>
+
+</table>
+</div>
+
+</body>
+</html>
